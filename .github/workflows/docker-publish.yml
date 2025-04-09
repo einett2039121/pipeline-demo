@@ -1,5 +1,3 @@
-name: Docker
-
 name: Build and test
 
 on:
