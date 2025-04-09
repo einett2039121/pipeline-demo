@@ -15,21 +15,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
     - name: Set up Go environment
       uses: actions/setup-go@v5.4.0
       with:
         go-version-file: ./go.mod
 
     - name: Go - Run tests
-      run: go test -v ./main_test.go        
+      run: go test -v ./...      
 
     - name: Build the Docker image
       uses: docker/build-push-action@v6.15.0
       with:
         context: .
-        tags: hello-world:latest
+        tags: hello-world:${{ github.sha }}
 
     - name: Test container
       run: |
-        docker run --rm hello-world
+        docker run --rm hello-world:latest
  
